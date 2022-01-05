@@ -88,13 +88,13 @@ class scatterplots {
 
     this.margins
       .append("g")
-      .attr("class", "x axis")
+      .attr("class", "x axisScatter")
       .attr("transform", `translate(0,${this.config.height})`)
       .call(xAxis);
 
     this.margins
       .append("g")
-      .attr("class", "y axis")
+      .attr("class", "y axisScatter")
       .call(yAxis);
   }
   UpdateAxis() {
@@ -105,11 +105,11 @@ class scatterplots {
       .ticks(15);
 
     this.margins
-      .selectAll("g.y.axis")
+      .selectAll("g.y.axisScatter")
       .call(xAxis);
 
     this.margins
-      .selectAll("g.y.axis")
+      .selectAll("g.y.axisScatter")
       .call(yAxis);
   }
 
@@ -124,21 +124,19 @@ class scatterplots {
       .attr('fill', d => this.catScale(d.cat));
   }
 
-  renderTitles(){
-    
+  renderLabels(){
     this.margins.append("text")
     .attr("text-anchor", "end")
     .attr("x", this.config.width)
     .attr("y", this.config.height + this.config.top + 10)
-    .text("Sales");
+    .text(this.config.labelX);
     
     this.margins.append("text")
     .attr("text-anchor", "end")
     .attr("transform", "rotate(-90)")
     .attr("y", -this.config.left + 11)
     .attr("x", -this.config.top)
-    .text("Profit")
-    
+    .text(this.config.labelY)
   }
 
   async load(filename, quantity){
@@ -151,7 +149,7 @@ class scatterplots {
 
 
 async function main() {
-  let c = {div: '#ScatterPlots', width: 800, height: 600, top: 30, left: 50, bottom: 30, right: 30};
+  let c = {div: '#ScatterPlots', width: 800, height: 600, top: 30, left: 50, bottom: 30, right: 30, labelX: "Sales", labelY:"Profit"};
   
   let plotter = new scatterplots(c);
   let filename = 'superstore.csv'
@@ -159,7 +157,7 @@ async function main() {
   plotter.createScales();
   plotter.createAxis();
   plotter.renderCircles();
-  plotter.renderTitles();
+  plotter.renderLabels();
   let limit = plotter.getTotal();
 
   async function runner(plot){
