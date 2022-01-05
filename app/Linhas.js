@@ -8,7 +8,6 @@ class Linhas {
     this.xScale = null;
     this.yScale = null;
 
-    this.circles = [];
     this.lines = []
     this.total = 0
 
@@ -17,17 +16,15 @@ class Linhas {
     
   }
   async loadCSV(file, quantity) {
-    this.circles = await d3.csv(file, d => {
+    this.lines = await d3.csv(file, d => {
       return {
-        cx: +d.Sales,
-        cy: +d.Profit,
-        col: d.Discount,
-        cat: d.Category,
-        r: 4
+        x1: +d.Sales,
+        y1: +d.Profit,
+        r: 1
       }
     });
-    this.total = this.circles.length;
-    this.circles = this.circles.slice(0, quantity);
+    this.total = this.lines.length;
+    this.lines = this.lines.slice(0, quantity);
   }
   getTotal(){
     return this.total;
@@ -58,25 +55,14 @@ class Linhas {
 
   createScales() {
     let xExtent = d3.extent(this.circles, d => {
-      return d.cx;
+      return d.x1;
     });
     let yExtent = d3.extent(this.circles, d => {
-      return d.cy;
+      return d.y1;
     });
-    let colExtent = d3.extent(this.circles, d => {
-      return d.col;
-    });
-
-    const cats = this.circles.map(d => {
-      return d.cat;
-    });
-    let catExtent = d3.union(cats);
 
     this.xScale = d3.scaleLinear().domain(xExtent).nice().range([0, this.config.width]);
     this.yScale = d3.scaleLinear().domain(yExtent).nice().range([this.config.height, 0]);
-
-    this.colScale = d3.scaleSequential(d3.interpolateOrRd).domain(colExtent);
-    this.catScale = d3.scaleOrdinal().domain(catExtent).range(d3.schemeTableau10);
   }
 
   createAxis() {

@@ -28,6 +28,7 @@ class scatterplots {
     this.total = this.circles.length;
     this.circles = this.circles.slice(0, quantity);
   }
+  
   getTotal(){
     return this.total;
   }
@@ -37,8 +38,8 @@ class scatterplots {
       .append("svg")
       .attr('x', 10)
       .attr('y', 10)
-      .attr('width', this.config.width + this.config.left + this.config.right)
-      .attr('height', this.config.height + this.config.top + this.config.bottom);
+      .attr('width', this.config.width + this.config.left + this.config.right+100)
+      .attr('height', this.config.height + this.config.top + this.config.bottom +100);
   }
 
   createMargins() {
@@ -87,11 +88,28 @@ class scatterplots {
 
     this.margins
       .append("g")
+      .attr("class", "x axis")
       .attr("transform", `translate(0,${this.config.height})`)
       .call(xAxis);
 
     this.margins
       .append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+  }
+  UpdateAxis() {
+    let xAxis = d3.axisBottom(this.xScale)
+      .ticks(15);
+
+    let yAxis = d3.axisLeft(this.yScale)
+      .ticks(15);
+
+    this.margins
+      .selectAll("g.y.axis")
+      .call(xAxis);
+
+    this.margins
+      .selectAll("g.y.axis")
       .call(yAxis);
   }
 
@@ -106,21 +124,42 @@ class scatterplots {
       .attr('fill', d => this.catScale(d.cat));
   }
 
+  renderTitles(){
+    
+    this.margins.append("text")
+    .attr("text-anchor", "end")
+    .attr("x", this.config.width)
+    .attr("y", this.config.height + this.config.top + 10)
+    .text("Sales");
+    
+    this.margins.append("text")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -this.config.left + 11)
+    .attr("x", -this.config.top)
+    .text("Profit")
+    
+  }
+
   async load(filename, quantity){
     await this.loadCSV(filename, quantity);
     this.createScales();
-    this.createAxis();
+    this.UpdateAxis();
     this.renderCircles();
   }
 }
 
 
 async function main() {
-  let c = {div: '#main', width: 800, height: 600, top: 30, left: 50, bottom: 30, right: 30};
+  let c = {div: '#ScatterPlots', width: 800, height: 600, top: 30, left: 50, bottom: 30, right: 30};
   
   let plotter = new scatterplots(c);
   let filename = 'superstore.csv'
   await plotter.load(filename, 100);
+  plotter.createScales();
+  plotter.createAxis();
+  plotter.renderCircles();
+  plotter.renderTitles();
   let limit = plotter.getTotal();
 
   async function runner(plot){
