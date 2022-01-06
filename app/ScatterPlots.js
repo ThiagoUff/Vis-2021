@@ -153,20 +153,24 @@ async function main() {
   
   let plotter = new scatterplots(c);
   let filename = 'superstore.csv'
-  await plotter.load(filename, 100);
+  let counter = 1000
+  await plotter.load(filename, counter);
   plotter.createScales();
   plotter.createAxis();
   plotter.renderCircles();
   plotter.renderLabels();
   let limit = plotter.getTotal();
 
-  async function runner(plot){
-    for(i=100; i < limit; i=i+100){
-      await plot.load(filename, i);
-    }
+
+  const interval = async function runner(plot) {
+    if (counter > limit)
+      clearInterval(refreshId)
+    else
+      counter += 1000
+    await plot.load(filename, counter);
   }
-  setInterval(await runner(plotter) ,1000)
-  
+
+  var refreshId = setInterval(async () => { await interval(plotter) }, 500)
 
 
   
