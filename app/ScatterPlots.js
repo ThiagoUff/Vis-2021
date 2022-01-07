@@ -40,8 +40,8 @@ class scatterplots {
       .append("svg")
       .attr('x', 10)
       .attr('y', 10)
-      .attr('width', this.config.width + this.config.left + this.config.right + 100)
-      .attr('height', this.config.height + this.config.top + this.config.bottom + 100);
+      .attr('width', this.config.width + this.config.left + this.config.right + 20)
+      .attr('height', this.config.height + this.config.top + this.config.bottom + 20);
   }
 
   createMargins() {
@@ -171,28 +171,28 @@ async function main() {
 
   let xSelect = document.getElementById("ScatterPlotslabel")
   let ySelect = document.getElementById("ScatterPlotsValue")
-  await Plot(xSelect, ySelect)
+  await PlotScatter(xSelect, ySelect)
 
   const ScatterPlotslabelElement = document.querySelector('#ScatterPlotslabel');
   ScatterPlotslabelElement.addEventListener('change', async (event) => {
     let xSelect = document.getElementById("ScatterPlotslabel")
     let ySelect = document.getElementById("ScatterPlotsValue")
-      document.getElementById("ScatterPlots").innerHTML = "";
-      await Plot(xSelect, ySelect)
-     
+    document.getElementById("ScatterPlots").innerHTML = "";
+    await PlotScatter(xSelect, ySelect)
+
   });
 
 
   const ScatterPlotsValueElement = document.querySelector('#ScatterPlotsValue');
   ScatterPlotsValueElement.addEventListener('change', async (event) => {
-      let xSelect = document.getElementById("ScatterPlotslabel")
-      let ySelect = document.getElementById("ScatterPlotsValue")
-      document.getElementById("ScatterPlots").innerHTML = "";
-      await Plot(xSelect, ySelect)
+    let xSelect = document.getElementById("ScatterPlotslabel")
+    let ySelect = document.getElementById("ScatterPlotsValue")
+    document.getElementById("ScatterPlots").innerHTML = "";
+    await PlotScatter(xSelect, ySelect)
   });
 }
 
-async function Plot(xSelect, ySelect) {
+async function PlotScatter(xSelect, ySelect) {
   let c = { div: '#ScatterPlots', width: 800, height: 600, top: 30, left: 50, bottom: 30, right: 30, xValue: xSelect.value, yValue: ySelect.value };
 
   let plotter = new scatterplots(c);

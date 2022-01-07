@@ -8,7 +8,6 @@ class Linhas {
     this.xScale = null;
     this.yScale = null;
 
-    this.circles = [];
     this.lines = [];
 
     this.total = 0;
@@ -25,7 +24,7 @@ class Linhas {
       .attr('x', 10)
       .attr('y', 10)
       .attr('width', this.config.width + this.config.left + this.config.right + 100)
-      .attr('height', this.config.height + this.config.top + this.config.bottom + 100);
+      .attr('height', this.config.height + this.config.top + this.config.bottom + 50);
   }
 
   createMargins() {
@@ -36,8 +35,8 @@ class Linhas {
   async loadCSV(file, quantity) {
     let temp = await d3.csv(file, (d) => {
       return {
-        x1: +d.Quantity,
-        y1: +d.Profit,
+        x1: +d[this.config.xValue],
+        y1: +d[this.config.yValue],
       }
     });
   
@@ -62,14 +61,8 @@ class Linhas {
     xPosition = xPosition.sort((a, b) => {
       return a.x1 >= b.x1 ? 1 : -1
     })
-    this.circles = []
+   
     xPosition.forEach((element, index) => {
-      this.circles.push(
-        {
-          cx: xPosition[index].x1,
-          cy: xPosition[index].y1,
-          r: 3,
-        })
      if (index > 0 && index < xPosition.length-1)
         this.lines.push(
           {
@@ -85,8 +78,6 @@ class Linhas {
     return this.total;
   }
 
-
-
   position(rect, x, y) {
     return rect
       .attr("x", x)
@@ -96,10 +87,7 @@ class Linhas {
   }
 
   createScales() {
-    // let xExtent = [0, Math.max.apply(Math, this.circles.map((o) => { return o.cx }))]
-    // let yExtent = d3.extent(this.circles, d => {
-    //   return d.cy;
-    // });
+
 
     let xExtent = [0, Math.max.apply(Math, this.lines.map((o) => { return o.x1 }))]
     let yExtent = d3.extent(this.lines, d => {
@@ -150,14 +138,14 @@ class Linhas {
         .attr("text-anchor", "end")
         .attr("x", this.config.width)
         .attr("y", this.config.height + this.config.top + 10)
-        .text(this.config.labelX);
+        .text(this.config.xValue);
 
     this.margins.append("text")
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-90)")
         .attr("y", -this.config.left + 11)
         .attr("x", -this.config.top)
-        .text(this.config.labelY)
+        .text(this.config.yValue)
 
     this.margins.append("text")
         .attr("text-anchor", "end")
@@ -177,50 +165,30 @@ UpdateLabels() {
 
   renderLines() {
     this.svg
-      .selectAll('line')
-      .data(this.lines)
-      .enter()  
-      .append('line')
-      
-      
-      .attr("stroke", "steelblue")
-      .style("stroke-width", 3)
-      .attr("x1", d => this.xScale(d.x1))
-      .attr("y1", d => this.yScale(d.y1))
-      .attr("x2", d => this.xScale(d.x2))
-      .attr("y2", d => this.yScale(d.y2));
-
-
-      // this.svg
-      //   .append("path")
-      //   .datum(this.lines)
-      //   .attr("stroke", "steelblue")
-      //   .style("stroke-width", 3)
-      //   .attr("d", d3.line()
-      //     .x(d => this.xScale(d.x1))
-      //     .y(d => this.yScale(d.y1))
-      //   )
-     
+    .selectAll('line')
+    .data(this.lines)
+    .enter()  
+    .append('line')
+    
+    
+    .attr("stroke", "steelblue")
+    .style("stroke-width", 1.5)
+    .attr("x1", d => this.xScale(d.x1))
+    .attr("y1", d => this.yScale(d.y1))
+    .attr("x2", d => this.xScale(d.x2))
+    .attr("y2", d => this.yScale(d.y2));
   }
 
-  renderCircles() {
-    this.margins.selectAll('circle')
-      .data(this.circles)
-      .join('circle')
-      .attr('cx', d => this.xScale(d.cx))
-      .attr('cy', d => this.yScale(d.cy))
-      .attr('r', d => d.r)
 
 
-  }
+
 
   async load(filename, quantity) {
     await this.loadCSV(filename, quantity);
     this.createScales();
     this.UpdateAxis();
     this.UpdateLabels();
-    //this.renderCircles();
-    this.renderLines();
+    // this.UpdateLines();
 
   }
 }
@@ -235,7 +203,6 @@ async function main() {
   await plotter.load(filename, counter);
   plotter.createScales();
   plotter.createAxis();
-  //plotter.renderCircles();
   plotter.renderLines();
   plotter.renderLabels();
   let limit = plotter.getTotal();
@@ -250,9 +217,54 @@ async function main() {
   }
 
   var refreshId = setInterval(async () => { await interval(plotter) }, 500)
+}
+
+async function main() {
+
+  let xSelect = document.getElementById("Linhaslabel")
+  let ySelect = document.getElementById("LinhasValue")
+  await PlotLinha(xSelect, ySelect)
+
+  const LinhaslabelElement = document.querySelector('#Linhaslabel');
+  LinhaslabelElement.addEventListener('change', async (event) => {
+      let xSelect = document.getElementById("Linhaslabel")
+      let ySelect = document.getElementById("LinhasValue")
+      document.getElementById("Linhas").innerHTML = "";
+      await PlotLinha(xSelect, ySelect)
+  });
+
+  const LinhasValueElement = document.querySelector('#LinhasValue');
+  LinhasValueElement.addEventListener('change', async (event) => {
+      let xSelect = document.getElementById("Linhaslabel")
+      let ySelect = document.getElementById("LinhasValue")
+      document.getElementById("Linhas").innerHTML = "";
+      await PlotLinha(xSelect, ySelect)
+  });
+}
+
+async function PlotLinha(xSelect, ySelect){
+  let c = { div: '#Linhas', width: 800, height: 600, top: 30, left: 50, bottom: 30, right: 30, xValue: xSelect.value, yValue: ySelect.value };
+
+  let plotter = new Linhas(c);
+  let filename = 'superstore.csv'
+  let counter = 1000
+  await plotter.load(filename, counter);
+  plotter.createScales();
+  plotter.createAxis();
+  plotter.renderLines();
+  plotter.renderLabels();
+  let limit = plotter.getTotal();
 
 
+  const interval = async function runner(plot) {
+    if (counter > limit)
+    clearInterval(refreshId)
+    else
+      counter += 1000
+    await plot.load(filename, counter);
+  }
 
+  var refreshId = setInterval(async () => { await interval(plotter) }, 500)
 
 }
 

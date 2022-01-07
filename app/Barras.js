@@ -22,8 +22,8 @@ class Barras {
             .append("svg")
             .attr('x', 10)
             .attr('y', 10)
-            .attr('width', this.config.width + this.config.left + this.config.right + 100)
-            .attr('height', this.config.height + this.config.top + this.config.bottom + 100);
+            .attr('width', this.config.width + this.config.left + this.config.right + 20)
+            .attr('height', this.config.height + this.config.top + this.config.bottom + 20);
     }
 
     createMargins() {
@@ -170,14 +170,14 @@ async function main() {
 
     let xSelect = document.getElementById("Barraslabel")
     let ySelect = document.getElementById("BarrasValue")
-    await Plot(xSelect, ySelect)
+    await PlotBarra(xSelect, ySelect)
 
     const BarraslabelElement = document.querySelector('#Barraslabel');
     BarraslabelElement.addEventListener('change', async (event) => {
         let xSelect = document.getElementById("Barraslabel")
         let ySelect = document.getElementById("BarrasValue")
         document.getElementById("Barras").innerHTML = "";
-        await Plot(xSelect, ySelect)
+        await PlotBarra(xSelect, ySelect)
        
     });
 
@@ -187,11 +187,11 @@ async function main() {
         let xSelect = document.getElementById("Barraslabel")
         let ySelect = document.getElementById("BarrasValue")
         document.getElementById("Barras").innerHTML = "";
-        await Plot(xSelect, ySelect)
+        await PlotBarra(xSelect, ySelect)
     });
 }
 
-async function Plot(xSelect, ySelect) {
+async function PlotBarra(xSelect, ySelect) {
     let c = { div: '#Barras', width: 800, height: 600, top: 30, left: 50, bottom: 30, right: 30, xValue: xSelect.value, yValue: ySelect.value };
 
     let plotter = new Barras(c);

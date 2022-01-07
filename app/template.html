@@ -31,21 +31,22 @@
         </select>
         <div id="ScatterPlots"></div>
     </div>
+
     <hr style="height:2px;border-width:0;color:gray;background-color:gray"> 
+
     <div id="graficoLinhas">
 
-        <p> Grafico de Barras, escolha o valores nos combos abaixo:</p>
+        <p> Grafico de Linhas, escolha o valores nos combos abaixo:</p>
         <label>X axis Value:</label>
-        <select name="label" id="Barraslabel">
-            <option value="Segment" selected>Segment</option>
-            <option value="City">City</option>
-            <option value="State">State</option>
-            <option value="Order Priority">Order Priority</option>
-            <option value="Category">Category</option>
-            <option value="Sub-Category">Sub-Category</option>
+        <select name="label" id="Linhaslabel">
+            <option value="Sales" selected>Sales</option>
+            <option value="Quantity">Quantity</option>
+            <option value="Discount">Discount</option>
+            <option value="Profit">Profit</option>
+            <option value="Shipping Cost">Shipping Cost</option>
         </select>
         <label>Y axis Value:</label>
-        <select name="label" id="BarrasValue">
+        <select name="label" id="LinhasValue">
             <option value="Sales" selected>Sales</option>
             <option value="Quantity">Quantity</option>
             <option value="Discount">Discount</option>
@@ -55,7 +56,9 @@
         <div id="Linhas"></div>
         <p>Disclaimer: o valor da coluna Y é uma média</p>
     </div>
+
     <hr style="height:2px;border-width:0;color:gray;background-color:gray"> 
+
     <div id="graficoBarras">
         <p> Grafico de Linhas, escolha o valores nos combos abaixo:</p>
         <label>X axis Value:</label>
@@ -78,7 +81,7 @@
 
         <div id="Barras"></div>
        
-    </div>
+    </div> 
 </body>
 
  <script src="ScatterPlots.js"></script>
