@@ -10,7 +10,9 @@ class Linhas {
 
     this.circles = [];
     this.lines = [];
+
     this.total = 0;
+    this.dataUnits = 0
 
     this.createSvg();
     this.createMargins();
@@ -38,6 +40,8 @@ class Linhas {
         y1: +d.Profit,
       }
     });
+  
+    this.dataUnits = quantity;
     this.total = temp.length;
     temp = temp.slice(0, quantity);
 
@@ -142,19 +146,34 @@ class Linhas {
 
   renderLabels() {
     this.margins.append("text")
-      .attr("text-anchor", "end")
-      .attr("x", this.config.width)
-      .attr("y", this.config.height + this.config.top + 10)
-      .text(this.config.labelX);
+        .attr("class", "labelx")
+        .attr("text-anchor", "end")
+        .attr("x", this.config.width)
+        .attr("y", this.config.height + this.config.top + 10)
+        .text(this.config.labelX);
 
     this.margins.append("text")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-90)")
-      .attr("y", -this.config.left + 11)
-      .attr("x", -this.config.top)
-      .text(this.config.labelY)
-  }
+        .attr("text-anchor", "end")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -this.config.left + 11)
+        .attr("x", -this.config.top)
+        .text(this.config.labelY)
 
+    this.margins.append("text")
+        .attr("text-anchor", "end")
+        .attr("class", "dataUnits")
+        .attr("x", this.config.width - 200)
+        .attr("y", this.config.height + this.config.top + 10)
+        .text("data units: " + this.dataUnits);
+}
+
+UpdateLabels() {
+    this.margins.select("text.dataUnits")
+        .attr("text-anchor", "end")
+        .attr("x", this.config.width - 200)
+        .attr("y", this.config.height + this.config.top + 10)
+        .text("data units: " + this.dataUnits);
+}
 
   renderLines() {
     this.svg
@@ -199,6 +218,7 @@ class Linhas {
     await this.loadCSV(filename, quantity);
     this.createScales();
     this.UpdateAxis();
+    this.UpdateLabels();
     //this.renderCircles();
     this.renderLines();
 
