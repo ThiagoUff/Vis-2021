@@ -10,9 +10,6 @@ class Linhas {
 
     this.lines = [];
 
-    this.total = 0;
-    this.dataUnits = 0
-
     this.createSvg();
     this.createMargins();
 
@@ -23,8 +20,8 @@ class Linhas {
       .append("svg")
       .attr('x', 10)
       .attr('y', 10)
-      .attr('width', this.config.width + this.config.left + this.config.right + 100)
-      .attr('height', this.config.height + this.config.top + this.config.bottom + 50);
+      .attr('width', this.config.width + this.config.left + this.config.right + 20)
+      .attr('height', this.config.height + this.config.top + this.config.bottom + 20);
   }
 
   createMargins() {
@@ -32,17 +29,13 @@ class Linhas {
       .append('g')
       .attr("transform", `translate(${this.config.left},${this.config.top})`)
   }
-  async loadCSV(file, quantity) {
+  async loadCSV(file) {
     let temp = await d3.csv(file, (d) => {
       return {
         x1: +d[this.config.xValue],
         y1: +d[this.config.yValue],
       }
     });
-  
-    this.dataUnits = quantity;
-    this.total = temp.length;
-    temp = temp.slice(0, quantity);
 
     var xPosition = [];
     temp.reduce(function (res, value) {
@@ -74,10 +67,6 @@ class Linhas {
     });
   }
 
-  getTotal() {
-    return this.total;
-  }
-
   position(rect, x, y) {
     return rect
       .attr("x", x)
@@ -94,7 +83,7 @@ class Linhas {
       return d.y1;
     });
 
-    this.xScale = d3.scaleLinear().domain(xExtent).nice().range([0, this.config.width]);
+    this.xScale = d3.scaleLinear().domain(xExtent).range([0, this.config.width]);
     this.yScale = d3.scaleLinear().domain(yExtent).nice().range([this.config.height, 0]);
   }
 
@@ -146,22 +135,9 @@ class Linhas {
         .attr("y", -this.config.left + 11)
         .attr("x", -this.config.top)
         .text(this.config.yValue)
-
-    this.margins.append("text")
-        .attr("text-anchor", "end")
-        .attr("class", "dataUnits")
-        .attr("x", this.config.width - 200)
-        .attr("y", this.config.height + this.config.top + 10)
-        .text("data units: " + this.dataUnits);
 }
 
-UpdateLabels() {
-    this.margins.select("text.dataUnits")
-        .attr("text-anchor", "end")
-        .attr("x", this.config.width - 200)
-        .attr("y", this.config.height + this.config.top + 10)
-        .text("data units: " + this.dataUnits);
-}
+
 
   renderLines() {
     this.svg
@@ -169,55 +145,16 @@ UpdateLabels() {
     .data(this.lines)
     .enter()  
     .append('line')
-    
-    
     .attr("stroke", "steelblue")
     .style("stroke-width", 1.5)
-    .attr("x1", d => this.xScale(d.x1))
+    .attr("x1", d => this.xScale(d.x1)+50)
     .attr("y1", d => this.yScale(d.y1))
-    .attr("x2", d => this.xScale(d.x2))
+    .attr("x2", d => this.xScale(d.x2)+50)
     .attr("y2", d => this.yScale(d.y2));
   }
 
-
-
-
-
-  async load(filename, quantity) {
-    await this.loadCSV(filename, quantity);
-    this.createScales();
-    this.UpdateAxis();
-    this.UpdateLabels();
-    // this.UpdateLines();
-
-  }
 }
 
-
-async function main() {
-  let c = { div: '#Linhas', width: 800, height: 600, top: 30, left: 50, bottom: 30, right: 30, labelX: "Quantity", labelY: "Profit" };
-
-  let plotter = new Linhas(c);
-  let filename = 'superstore.csv'
-  let counter = 1000
-  await plotter.load(filename, counter);
-  plotter.createScales();
-  plotter.createAxis();
-  plotter.renderLines();
-  plotter.renderLabels();
-  let limit = plotter.getTotal();
-
-
-  const interval = async function runner(plot) {
-    if (counter > limit)
-    clearInterval(refreshId)
-    else
-      counter += 1000
-    await plot.load(filename, counter);
-  }
-
-  var refreshId = setInterval(async () => { await interval(plotter) }, 500)
-}
 
 async function main() {
 
@@ -247,25 +184,11 @@ async function PlotLinha(xSelect, ySelect){
 
   let plotter = new Linhas(c);
   let filename = 'superstore.csv'
-  let counter = 1000
-  await plotter.load(filename, counter);
+  await plotter.loadCSV(filename);
   plotter.createScales();
   plotter.createAxis();
   plotter.renderLines();
   plotter.renderLabels();
-  let limit = plotter.getTotal();
-
-
-  const interval = async function runner(plot) {
-    if (counter > limit)
-    clearInterval(refreshId)
-    else
-      counter += 1000
-    await plot.load(filename, counter);
-  }
-
-  var refreshId = setInterval(async () => { await interval(plotter) }, 500)
-
 }
 
 main();
